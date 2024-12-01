@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	_ "container/list"
 	"fmt"
 	"os"
@@ -9,17 +10,26 @@ import (
 func main() {
 	// leftSide := list.New()
 	// rightSide := list.New()
-	fmt.Println(*loadFile("./input.txt"))
-	fmt.Println("Hello, World!")
-}
+	file, scanner, err := loadFile("input.txt")
 
-func loadFile(path string) *string {
-	bytes, err := os.ReadFile(path)
 	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return nil
+		return
 	}
 
-	content := string(bytes)
-	return &content
+	defer file.Close()
+
+	for scanner.Scan() {
+		fmt.Println(scanner.Text())
+	}
+}
+
+func loadFile(path string) (*os.File, *bufio.Scanner, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		fmt.Println("Error opening file:", err)
+		return nil, nil, err
+	}
+
+	scanner := bufio.NewScanner(file)
+	return file, scanner, nil
 }
