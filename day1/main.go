@@ -2,25 +2,20 @@ package main
 
 import (
 	"bufio"
-	_ "container/list"
+	"container/list"
 	"fmt"
 	"os"
+	"strings"
 )
 
 func main() {
-	// leftSide := list.New()
-	// rightSide := list.New()
-	file, scanner, err := loadFile("input.txt")
-
+	leftSide, rightSide, err := convertScannerToTwoLists()
 	if err != nil {
 		return
 	}
+	fmt.Println(leftSide.Len())
+	fmt.Println(rightSide.Len())
 
-	defer file.Close()
-
-	for scanner.Scan() {
-		fmt.Println(scanner.Text())
-	}
 }
 
 func loadFile(path string) (*os.File, *bufio.Scanner, error) {
@@ -32,4 +27,23 @@ func loadFile(path string) (*os.File, *bufio.Scanner, error) {
 
 	scanner := bufio.NewScanner(file)
 	return file, scanner, nil
+}
+
+func convertScannerToTwoLists() (list.List, list.List, error) {
+	leftSide := list.New()
+	rightSide := list.New()
+	file, scanner, err := loadFile("input.txt")
+
+	if err != nil {
+		return *leftSide, *rightSide, err
+	}
+
+	defer file.Close()
+
+	for scanner.Scan() {
+		words := strings.Fields(scanner.Text())
+		leftSide.PushBack(words[0])
+		rightSide.PushBack(words[1])
+	}
+	return *leftSide, *rightSide, nil
 }
